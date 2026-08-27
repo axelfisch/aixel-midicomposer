@@ -199,6 +199,11 @@ Ne pas ajouter maintenant :
 - fenêtres inutiles ;
 - architecture plus complexe sans besoin démontré.
 
+## Notes d'environnement (Mac local)
+
+- `pnpm` n'est pas installé globalement sur cette machine et `npm install -g` / `corepack enable` échouent (permissions sur `/usr/local`, install Node sur le volume externe "Axel Drive"). Utiliser `npx pnpm install` puis `npx pnpm dev` / `npx pnpm run build` — fonctionne sans installation globale.
+- Le dossier du projet est dans `~/Documents/Codex/...`, synchronisé iCloud avec "Optimiser le stockage Mac". Des fichiers (y compris parfois `node_modules`, `pnpm-lock.yaml` ou des fichiers `src/`) peuvent redevenir des placeholders cloud-only après un moment d'inactivité, ce qui casse `git add`, `tsc` ou `pnpm install` avec une erreur `Resource deadlock avoided` / `Unknown system error -35`. Solution : ouvrir les fichiers concernés (Finder → clic droit → Télécharger) ou les re-matérialiser avant de bosser dessus.
+
 ## Commandes de référence
 
 ```bash
