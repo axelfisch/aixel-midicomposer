@@ -16,6 +16,7 @@ const BEAT_WIDTH = 92
 const LOW_NOTE = 24   // C1 — couvre toutes les notes basse
 const HIGH_NOTE = 96  // C7 — couvre toutes les notes aigu
 const TOTAL_BEATS = 16
+const SIGNATURES: Array<[number, number]> = [[4, 4], [3, 4], [2, 4], [6, 8], [5, 4], [7, 8]]
 const noteNames = ['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B']
 
 function App() {
@@ -25,6 +26,8 @@ function App() {
   const [inspectorOpen, setInspectorOpen] = useState(true)
   const [mixerOpen, setMixerOpen] = useState(false)
   const [toast, setToast] = useState('')
+  const [editingName, setEditingName] = useState(false)
+  const [nameDraft, setNameDraft] = useState(store.name)
   const activeTrack = store.tracks.find(t => t.id === store.activeTrackId)!
   const activeInstrument = instruments.find(i => i.id === activeTrack?.instrumentId)!
   const timer = useRef<number>()
@@ -163,15 +166,42 @@ function App() {
   }
   const snapLabel = snap === .125 ? '1/32' : snap === .25 ? '1/16' : snap === .5 ? '1/8' : '1/4'
 
+  const cycleSignature = () => {
+    const idx = SIGNATURES.findIndex(([n, d]) => n === store.timeSignature[0] && d === store.timeSignature[1])
+    const next = SIGNATURES[(idx + 1 + SIGNATURES.length) % SIGNATURES.length]
+    store.setTimeSignature(next)
+  }
+  const commitName = () => {
+    store.renameProject(nameDraft)
+    setEditingName(false)
+  }
+
   return <main className="app-shell">
     <header className="topbar">
       <div className="brand">
         <div className="brand-mark"><Music2 size={18} /></div>
         <div><b>AiXel</b><span>MIDI COMPOSER</span></div>
       </div>
-      <button className="project-title" onClick={() => notify('Renommer le projet arrive en V1.1')} title="Nom du projet — édition en V1.1">
-        <span className="save-dot" /> {store.name}<ChevronDown size={14} />
-      </button>
+      {editingName ? (
+        <input
+          className="project-title editing"
+          value={nameDraft}
+          autoFocus
+          maxLength={60}
+          aria-label="Nom du projet"
+          onChange={e => setNameDraft(e.target.value)}
+          onBlur={commitName}
+          onKeyDown={e => {
+            if (e.key === 'Enter') commitName()
+            if (e.key === 'Escape') { setNameDraft(store.name); setEditingName(false) }
+          }}
+        />
+      ) : (
+        <button className="project-title" title="Renommer le projet"
+          onClick={() => { setNameDraft(store.name); setEditingName(true) }}>
+          <span className="save-dot" /> {store.name}<ChevronDown size={14} />
+        </button>
+      )}
       <nav className="main-tabs">
         <button className="active" aria-current="page" title="Éditeur MIDI actif"><Grid3X3 size={15} /> MIDI</button>
         <button disabled title="ScoreEdition arrive en V2"><ListMusic size={15} /> SCORE <em>V2</em></button>
@@ -214,9 +244,9 @@ function App() {
         </button>
       </div>
       <div className="position">
-        <strong>{String(Math.floor(store.playhead / 4) + 1).padStart(2, '0')}</strong>
+        <strong>{String(Math.floor(store.playhead / store.timeSignature[0]) + 1).padStart(2, '0')}</strong>
         <i />
-        <strong>{String(Math.floor(store.playhead % 4) + 1).padStart(2, '0')}</strong>
+        <strong>{String(Math.floor(store.playhead % store.timeSignature[0]) + 1).padStart(2, '0')}</strong>
         <i />
         <span>{String(Math.floor((store.playhead % 1) * 100)).padStart(2, '0')}</span>
         <small>BAR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BEAT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TICK</small>
@@ -227,8 +257,8 @@ function App() {
           value={store.bpm} onChange={e => store.setBpm(+e.target.value)} type="number" />
         <b>BPM</b>
       </label>
-      <button className="signature" disabled title="Changement de signature disponible en V1.1">
-        <span>SIGNATURE</span><b>4 / 4</b>
+      <button className="signature" title="Changer la signature rythmique" onClick={cycleSignature}>
+        <span>SIGNATURE</span><b>{store.timeSignature[0]} / {store.timeSignature[1]}</b>
       </button>
       <button className={`transport-toggle ${store.loop ? 'on' : ''}`}
         onClick={() => useComposer.setState(s => ({ loop: !s.loop }))}>
@@ -442,7 +472,7 @@ type DragRef = {
 } | null
 
 function PianoRoll({ snap, beatWidth, notify }: { snap: number; beatWidth: number; notify: (msg: string) => void }) {
-  const { tracks, activeTrackId, selectedNoteIds, addNote, selectNote, clearSelection, updateNote, setPlayhead, playhead } = useComposer()
+  const { tracks, activeTrackId, selectedNoteIds, addNote, selectNote, clearSelection, updateNote, setPlayhead, playhead, timeSignature } = useComposer()
   const track = tracks.find(t => t.id === activeTrackId)!
   const instrument = instruments.find(i => i.id === track?.instrumentId)!
   const pitches = useMemo(() => Array.from({ length: HIGH_NOTE - LOW_NOTE + 1 }, (_, i) => HIGH_NOTE - i), [])
@@ -546,8 +576,8 @@ function PianoRoll({ snap, beatWidth, notify }: { snap: number; beatWidth: numbe
       <div className="ruler-spacer" />
       <div className="ruler" title="Cliquer pour déplacer la tête de lecture" style={{ width: TOTAL_BEATS * beatWidth }}
         onClick={e => setPlayhead((e.clientX - e.currentTarget.getBoundingClientRect().left) / beatWidth)}>
-        {Array.from({ length: 4 }, (_, i) => (
-          <span key={i} style={{ left: i * 4 * beatWidth }}>BAR {i + 1}</span>
+        {Array.from({ length: Math.ceil(TOTAL_BEATS / timeSignature[0]) }, (_, i) => (
+          <span key={i} style={{ left: i * timeSignature[0] * beatWidth }}>BAR {i + 1}</span>
         ))}
       </div>
       <div className="piano">
@@ -566,7 +596,7 @@ function PianoRoll({ snap, beatWidth, notify }: { snap: number; beatWidth: numbe
             style={{ top: i * ROW_HEIGHT }} />
         ))}
         {Array.from({ length: TOTAL_BEATS * 4 + 1 }, (_, i) => (
-          <i key={i} className={i % 16 === 0 ? 'bar' : i % 4 === 0 ? 'beat' : 'sub'} style={{ left: i * beatWidth / 4 }} />
+          <i key={i} className={i % (timeSignature[0] * 4) === 0 ? 'bar' : i % 4 === 0 ? 'beat' : 'sub'} style={{ left: i * beatWidth / 4 }} />
         ))}
         {track?.notes.map(note => {
           const isSelected = selectedNoteIds.includes(note.id)

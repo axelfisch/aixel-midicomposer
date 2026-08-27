@@ -66,6 +66,13 @@ button:disabled { cursor: not-allowed; opacity: .43 }
   border: 0; background: transparent; text-align: left;
 }
 .project-title:hover { color: #b59f70 }
+input.project-title.editing {
+  color: #e0d8c7;
+  border-bottom: 1px solid var(--violet);
+  outline: none;
+  padding-bottom: 2px;
+  box-shadow: 0 10px 16px -12px var(--violet-glow);
+}
 .save-dot { width: 5px; height: 5px; border-radius: 50%; background: #a1824e }
 .main-tabs { display: flex; height: 100%; align-items: stretch; gap: 4px; margin: auto }
 .main-tabs button {

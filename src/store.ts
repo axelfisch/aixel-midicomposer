@@ -33,6 +33,8 @@ interface ComposerStore extends ProjectState {
   canUndo: () => boolean
   canRedo: () => boolean
   setBpm: (bpm: number) => void
+  renameProject: (name: string) => void
+  setTimeSignature: (sig: [number, number]) => void
   togglePlay: () => void
   stop: () => void
   setPlayhead: (beat: number) => void
@@ -124,6 +126,12 @@ export const useComposer = create<ComposerStore>((set, get) => ({
   canRedo: () => get().future.length > 0,
 
   setBpm: bpm => withHistory(set, get, () => ({ bpm: Math.max(40, Math.min(240, bpm)) })),
+  renameProject: name => {
+    const trimmed = name.trim()
+    if (!trimmed || trimmed === get().name) return
+    withHistory(set, get, () => ({ name: trimmed.slice(0, 60) }))
+  },
+  setTimeSignature: sig => withHistory(set, get, () => ({ timeSignature: sig })),
   togglePlay: () => set(s => ({ isPlaying: !s.isPlaying })),
   stop: () => set({ isPlaying: false, playhead: 0 }),
   setPlayhead: playhead => set({ playhead }),
