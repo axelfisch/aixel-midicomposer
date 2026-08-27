@@ -6,3 +6,4 @@ outputs/
 *.tsbuildinfo
 .env
 .env.local
+.pnpm-store/
