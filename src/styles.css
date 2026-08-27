@@ -9,10 +9,10 @@
   --gold-glow: #e8c98f;
   --violet: #7c64b8;
   --violet-glow: #a98cf0;
-  --line: #242a37;
+  --line: #362a52;
   --panel: #101521;
   --muted: #757c89;
-  --grid-line: rgba(120, 160, 190, .045);
+  --grid-line: rgba(160, 130, 220, .09);
 }
 
 * { box-sizing: border-box }
@@ -55,7 +55,7 @@ button:disabled { cursor: not-allowed; opacity: .43 }
   display: grid; place-items: center;
   color: #c19f63;
   background: linear-gradient(145deg, #29231a, #121722);
-  box-shadow: 0 0 14px -3px var(--gold-glow), inset 0 0 8px -4px var(--gold-glow);
+  box-shadow: 0 0 10px -2px var(--gold-glow), 0 0 24px -5px var(--violet-glow), inset 0 0 8px -3px var(--gold-glow);
 }
 .brand > div:last-child { display: flex; align-items: baseline; gap: 6px }
 .brand b { font-size: 18px; letter-spacing: .5px; color: #c3ab7a }
@@ -78,7 +78,7 @@ button:disabled { cursor: not-allowed; opacity: .43 }
 .main-tabs button.active:after {
   content: ""; position: absolute; bottom: 0; left: 12px; right: 12px;
   height: 2px; background: #a9864c;
-  box-shadow: 0 0 8px 0 var(--gold-glow);
+  box-shadow: 0 0 15px 1px var(--gold-glow);
 }
 .main-tabs em {
   font-size: 6px; padding: 2px 4px; border: 1px solid #3c414c;
@@ -118,12 +118,12 @@ button:disabled { cursor: not-allowed; opacity: .43 }
   border: 1px solid #997b48; border-radius: 50%;
   width: 40px; height: 40px; color: #bfa166;
   background: #1e1c1b;
-  box-shadow: 0 0 16px -4px var(--gold-glow);
+  box-shadow: 0 0 22px -3px var(--gold-glow), 0 0 34px -10px var(--violet-glow);
   transition: box-shadow .2s, background .15s, border-color .15s;
 }
 .transport-controls .play:hover {
   background: #241d14; border-color: #b4904e;
-  box-shadow: 0 0 22px -2px var(--gold-glow);
+  box-shadow: 0 0 32px -2px var(--gold-glow), 0 0 44px -6px var(--violet-glow);
 }
 .position {
   height: 48px; min-width: 158px;
@@ -212,7 +212,7 @@ button:disabled { cursor: not-allowed; opacity: .43 }
 .track-card:hover { background: #111725 }
 .track-card.selected {
   background: linear-gradient(90deg, #29251f, #171b24);
-  box-shadow: inset 2px 0 #a7844a;
+  box-shadow: inset 2px 0 #a7844a, 0 0 16px -6px var(--violet-glow);
 }
 .track-card:focus-visible { outline: 1px solid #a7844a; outline-offset: -2px }
 .track-number { font-size: 8px; color: #565e6c }
@@ -416,7 +416,7 @@ button:disabled { cursor: not-allowed; opacity: .43 }
 
 .mixer-sidebar {
   width: 270px; flex: none;
-  border-left: 1px solid #29251c;
+  border-left: 1px solid var(--line);
   background: linear-gradient(180deg, #14141d, #0e121a);
   overflow-y: auto;
   box-shadow: inset 1px 0 #0008;
@@ -450,7 +450,7 @@ button:disabled { cursor: not-allowed; opacity: .43 }
 .mixer-buttons button:hover { color: #a78b54; border-color: #4c4429 }
 .mixer-buttons button.active { border-color: #735b34; color: #b19058; background: #221d16 }
 .inspector-title {
-  height: 42px; border-bottom: 1px solid #292f3a;
+  height: 42px; border-bottom: 1px solid var(--line);
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 15px; font-size: 8px; letter-spacing: 1.4px; color: #747b86;
 }
@@ -519,8 +519,8 @@ button:disabled { cursor: not-allowed; opacity: .43 }
   transition: border-color .15s, background .15s;
 }
 .harmony button:hover {
-  border-color: #5a4c36; background: linear-gradient(110deg, #29221a, #1b2028);
-  box-shadow: 0 0 18px -6px var(--violet-glow);
+  border-color: #6a5aa0; background: linear-gradient(110deg, #29221a, #1e1a2c);
+  box-shadow: 0 0 28px -4px var(--violet-glow);
 }
 .harmony button span { display: flex; flex-direction: column; gap: 3px; flex: 1 }
 .harmony b { font-size: 9px }
